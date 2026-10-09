@@ -54,12 +54,6 @@ Grafana's admin password is stored the same way the `db` role handles `vault_db_
 
 General lesson that shows up repeatedly across this role: **anything written as root that a non-root service user (`grafana`) later needs to read or write requires explicit `owner`/`group`, not just correct mode bits** — and several directories/behaviors that systemd + apt postinst scripts normally handle invisibly on a "real" host had to be recreated by hand here.
 
-## Deliberately deferred / not implemented
-
-- **Alertmanager** — considered for the kill-and-recover demo, deliberately skipped to keep scope focused. The demo is Grafana-visual-only: stop nginx on `web1`, confirm the load balancer only serves from `web2`, screenshot, restart, screenshot recovery. Adding real alert firing (Alertmanager + notification routing) is a natural next step if this project continues.
-- **Service-specific exporters** (e.g. an nginx exporter) — node_exporter only reports host-level OS metrics, so the kill-and-recover demo proves "web1 the container OS is still up" rather than "nginx specifically is down." A dedicated nginx exporter would give a metric that directly reflects service health rather than only host health.
-- **CI verification of the monitoring stack** — CI currently verifies web/loadBalancer/db; Prometheus/Grafana health is verified manually, not asserted in `Test_Connection.yml`.
-
 ## Container caveat
 
 node_exporter reads `/proc` and `/sys`, which are already namespaced per-container under Docker — so its metrics reflect *this container's* cgroup-scoped resource usage, not the underlying Docker host's physical hardware. This is consistent with the project's existing container-as-host model (the same fiction `hardening`/`web`/`loadBalancer` already rely on) and doesn't need any special handling, but is worth knowing if a panel shows unexpectedly low/high numbers compared to what `docker stats` or the host machine itself would report.

@@ -27,8 +27,3 @@ Each should return a page whose content differs only in the hostname it reports.
 ## Dependencies
 
 None directly — relies on `groups['web']` being correctly populated in `inventory.ini` for the `loadBalancer` role's upstream config and Prometheus's scrape targets to find these hosts, but the `web` role itself doesn't reference other roles or groups.
-
-## Deliberately deferred / not implemented
-
-- No real application — this is a portfolio/showcase project, so the "web tier" is a placeholder page rather than a deployed app. Swapping in a real app would mean replacing this role's task list and template with whatever that app's deployment actually requires.
-- `ufw` is installed but not configured — same reasoning as the `hardening` role's decision not to manage firewall rules inside these containers (Docker doesn't grant `NET_ADMIN`/`NET_RAW` by default; real deployments should firewall at the host/cloud layer).

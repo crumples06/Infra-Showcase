@@ -20,11 +20,3 @@ Installs and configures MySQL for the application data tier, applied to the `db`
 
 - Run `ansible-galaxy collection install community.mysql` on the control node before this role can use `mysql_db`/`mysql_user` — they're not part of Ansible core.
 - Requires `--vault-password-file vault_pass.txt` on every `ansible-playbook` run, same as the rest of this project's vault-encrypted content.
-
-## Deliberately deferred / not implemented
-
-**Persistent storage** — the `db` container has no Docker volume, so its data does not survive a `docker compose down`/`up` cycle. This is intentional: this project is an infrastructure showcase with no real application behind it, so persistence adds operational complexity without adding to the demonstration. A real deployment would attach a named volume to `/var/lib/mysql`.
-
-**Cache tier (Redis)** — scoped out to keep this milestone focused; the multi-tier connectivity pattern is already demonstrated by the DB alone.
-
-**CI verification** — the pipeline currently proves the playbook runs against the `db` host successfully, but does not yet assert the database/user are actually queryable end-to-end.

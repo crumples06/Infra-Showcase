@@ -104,11 +104,3 @@ A dedicated SSH keypair (generated once, public key committed at `control/ssh_ke
 The full metrics pipeline — node_exporter on every host, Prometheus scraping and storing, Grafana visualizing via an auto-provisioned datasource and the community "Node Exporter Full" dashboard — is detailed in the `monitoring` role README, including a long list of real bugs hit along the way (stale install docs, permission/ownership gaps between root-run Ansible tasks and non-root service users, and Grafana's non-obvious "admin password only applies at first bootstrap" behavior).
 
 A kill-and-recover demonstration (stopping nginx on `web1`, observing the effect, restarting) serves as this project's incident-response demo. Alertmanager was deliberately scoped out — the demo is visual (dashboard/load-balancer behavior), not alert-driven — and is documented as a natural next step rather than something silently missing.
-
-## What's deliberately out of scope
-
-Documented per-role rather than treated as oversights:
-- **Scoped sudo** — targets currently retain `NOPASSWD:ALL` for the `ansible` user; a narrower command allowlist is a natural next step (`hardening` README).
-- **ufw/fail2ban** — not implemented; Docker doesn't grant the `NET_ADMIN`/`NET_RAW` capabilities they'd need by default, and a real deployment should firewall at the host/cloud layer instead (`hardening` README).
-- **No persistent volumes / real application** — this is an infra showcase, not a deployed app; the web tier serves a placeholder page and the db tier has no data worth persisting.
-- **Alertmanager** — visual-only incident demo instead (`monitoring` README).

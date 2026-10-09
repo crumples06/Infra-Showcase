@@ -57,7 +57,7 @@ curl: (7) Failed to connect to web1 port 80 after 1 ms: Could not connect to ser
 ```
 ![curl -v against web1, connection refused](images/web1_curl_from_control_after_stopping_web1-nginx.PNG)
 
-**What Grafana does *not* show:** node_exporter is a separate process from nginx, so stopping nginx has no effect on node_exporter's own metrics — web1's host-level panel (CPU, memory, uptime, the `up` indicator) reads as healthy throughout the outage. This is expected, not a monitoring gap in the sense of something broken — it's the actual boundary of what host-level metrics can see. **A service-specific exporter (e.g. for nginx) would be required to detect this failure from Prometheus/Grafana directly** — currently the only signal for this class of failure is the load-balancer/application layer, not the metrics layer. This is documented as a deferred improvement in the `monitoring` role README.
+**What Grafana does *not* show:** node_exporter is a separate process from nginx, so stopping nginx has no effect on node_exporter's own metrics — web1's host-level panel (CPU, memory, uptime, the `up` indicator) reads as healthy throughout the outage. This is expected, not a monitoring gap in the sense of something broken — it's the actual boundary of what host-level metrics can see. 
 
 ## Recovery
 
@@ -86,7 +86,7 @@ $ for i in $(seq 1 5); do curl -s http://loadbalancer | grep "<title>"; done
 ## Findings
 
 1. **Load balancer failover works correctly and requires no manual intervention** — `least_conn` routing stopped sending traffic to the failed upstream within the demo's request window, with no dropped requests observed from the client side (every request during the outage still got a valid response, just always from web2).
-2. **Host-level metrics (node_exporter) do not detect application/service-level failures.** This is a real, honest limitation of the current setup, not a bug — node_exporter reports on the OS, not on individual services running on it. Catching this class of failure directly in Prometheus/Grafana would require a dedicated nginx exporter (or similar), which is documented as a deferred next step rather than implemented here.
+2. **Host-level metrics (node_exporter) do not detect application/service-level failures.** This is a real, honest limitation of the current setup, not a bug — node_exporter reports on the OS, not on individual services running on it. Catching this class of failure directly in Prometheus/Grafana would require a dedicated nginx exporter (or similar).
 3. **Recovery is immediate and automatic** on the load-balancing side — no configuration changes or restarts were needed on the `loadbalancer` host itself; it simply resumed routing to web1 once nginx there was healthy again.
 
 

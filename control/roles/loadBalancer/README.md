@@ -31,8 +31,3 @@ Each response's content should vary between web1 and web2 (per the `web` role's 
 ## Dependencies
 
 Depends on `groups['web']` being correctly populated in `inventory.ini` — the upstream block is empty (and nginx would fail to start) if that group is empty or misnamed.
-
-## Deliberately deferred / not implemented
-
-- No health-check-based upstream removal — nginx's open-source build doesn't support active health checks out of the box, so a failed web host currently only drops out of rotation once `least_conn` naturally routes around slow/hung connections, not via an explicit health probe. Worth knowing when reasoning about the kill-and-recover demo in the `monitoring` role: nginx itself doesn't "detect" web1 going down in the same sense Prometheus/Grafana do.
-- No TLS/SSL termination — this is an HTTP-only reverse proxy, consistent with the project's scope as an infra showcase rather than a production-facing service.
